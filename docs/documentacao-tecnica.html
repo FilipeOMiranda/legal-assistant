@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentação Técnica — Sistema de Teses Jurídicas Trabalhistas</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 11pt;
+    line-height: 1.75;
+    color: #1a1a2e;
+    background: #fff;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 50px;
+  }
+
+  /* ── Tipografia ── */
+  h1 { font-size: 22pt; font-weight: 700; color: #0f172a; margin-bottom: 6px; letter-spacing: -0.5px; }
+  h2 { font-size: 15pt; font-weight: 700; color: #1e3a5f; margin: 40px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #3b82f6; }
+  h3 { font-size: 12pt; font-weight: 700; color: #1e3a5f; margin: 24px 0 8px; }
+  h4 { font-size: 11pt; font-weight: 700; color: #374151; margin: 16px 0 6px; }
+  p  { margin-bottom: 10px; text-align: justify; }
+
+  /* ── Capa ── */
+  .cover {
+    min-height: 200px;
+    background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+    border-radius: 8px;
+    padding: 40px 48px;
+    color: #fff;
+    margin-bottom: 40px;
+  }
+  .cover .label { font-size: 9pt; letter-spacing: 2px; text-transform: uppercase; opacity: 0.75; margin-bottom: 10px; font-family: Arial, sans-serif; }
+  .cover h1 { color: #fff; font-size: 20pt; margin-bottom: 8px; }
+  .cover .subtitle { font-size: 12pt; opacity: 0.85; margin-bottom: 20px; }
+  .cover .meta { font-size: 9pt; opacity: 0.65; font-family: Arial, sans-serif; }
+
+  /* ── Sumário ── */
+  .toc { background: #f8fafc; border-left: 4px solid #3b82f6; padding: 20px 24px; border-radius: 0 6px 6px 0; margin-bottom: 36px; }
+  .toc h3 { margin: 0 0 12px; color: #1e3a5f; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 4px; font-family: Arial, sans-serif; font-size: 10pt; color: #374151; }
+  .toc li span { color: #6b7280; }
+
+  /* ── Caixas informativas ── */
+  .box { border-radius: 6px; padding: 16px 20px; margin: 16px 0; }
+  .box-blue  { background: #eff6ff; border-left: 4px solid #3b82f6; }
+  .box-green { background: #f0fdf4; border-left: 4px solid #22c55e; }
+  .box-amber { background: #fffbeb; border-left: 4px solid #f59e0b; }
+  .box-gray  { background: #f8fafc; border-left: 4px solid #94a3b8; }
+  .box strong { display: block; margin-bottom: 4px; color: #0f172a; }
+
+  /* ── Código ── */
+  pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 6px;
+    padding: 16px 20px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 9pt;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin: 12px 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  code {
+    font-family: 'Courier New', Courier, monospace;
+    background: #f1f5f9;
+    color: #1e3a5f;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 9.5pt;
+  }
+  pre code { background: none; color: inherit; padding: 0; font-size: 9pt; }
+
+  /* ── Tabelas ── */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 10pt; font-family: Arial, sans-serif; }
+  th { background: #1e3a5f; color: #fff; padding: 9px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid #e2e8f0; }
+  tr:nth-child(even) td { background: #f8fafc; }
+
+  /* ── Diagrama ASCII ── */
+  .diagram {
+    background: #0f172a;
+    color: #93c5fd;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 9pt;
+    line-height: 1.6;
+    padding: 20px 24px;
+    border-radius: 6px;
+    margin: 16px 0;
+    white-space: pre;
+  }
+
+  /* ── Listas ── */
+  ul, ol { padding-left: 22px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  /* ── Badge de tecnologia ── */
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .badge {
+    background: #1e3a5f;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    font-size: 8.5pt;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── Separador de seção ── */
+  .section-divider { border: none; border-top: 1px solid #e2e8f0; margin: 36px 0; }
+
+  /* ── Print ── */
+  @media print {
+    body { padding: 0; max-width: 100%; font-size: 10.5pt; }
+    .cover { border-radius: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    pre, .diagram { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    h2 { page-break-before: auto; }
+    pre { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CAPA -->
+<div class="cover">
+  <div class="label">Documentação Técnica</div>
+  <h1>Sistema de Busca de Teses Jurídicas Trabalhistas</h1>
+  <div class="subtitle">Arquitetura RAG com FastAPI · Supabase pgvector · OpenAI · Next.js</div>
+  <div class="meta">Versão 1.0 &nbsp;·&nbsp; Abril 2025 &nbsp;·&nbsp; github.com/FilipeOMiranda/legal-assistant</div>
+</div>
+
+<!-- SUMÁRIO -->
+<div class="toc">
+  <h3>Sumário</h3>
+  <ol>
+    <li>Visão Geral do Sistema</li>
+    <li>O que é RAG (Retrieval Augmented Generation)</li>
+    <li>Arquitetura Completa</li>
+    <li>Pipeline de Indexação</li>
+    <li>Pipeline de Busca</li>
+    <li>Google Drive — Integração e Extração</li>
+    <li>Chunking Jurídico — Divisão Inteligente de Texto</li>
+    <li>Embeddings — Representação Vetorial do Texto</li>
+    <li>Supabase e pgvector — Banco Vetorial</li>
+    <li>FastAPI — Backend e Endpoints</li>
+    <li>OpenAI GPT-4o — Análise por IA</li>
+    <li>Frontend — Next.js + Tailwind CSS</li>
+    <li>Infraestrutura e Deploy</li>
+    <li>Segurança</li>
+    <li>Glossário</li>
+  </ol>
+</div>
+
+
+<!-- 1. VISÃO GERAL -->
+<h2>1. Visão Geral do Sistema</h2>
+
+<p>O sistema de busca de teses jurídicas trabalhistas é uma aplicação de inteligência artificial aplicada ao Direito do Trabalho. O objetivo central é simples: um advogado descreve o argumento da parte contrária que precisa rebater, e o sistema localiza automaticamente nos documentos do acervo os trechos mais relevantes, gerando uma análise estratégica dos argumentos a utilizar.</p>
+
+<p>Para isso, o sistema combina três grandes tecnologias modernas de IA:</p>
+
+<ul>
+  <li><strong>Busca semântica vetorial</strong> — em vez de buscar palavras-chave exatas, o sistema entende o <em>significado</em> da consulta e encontra trechos semanticamente relacionados, mesmo que usem vocabulário diferente.</li>
+  <li><strong>Large Language Models (LLM)</strong> — o modelo GPT-4o da OpenAI lê os trechos encontrados e gera uma análise consolidada, indicando quais argumentos são mais fortes e como utilizá-los.</li>
+  <li><strong>RAG (Retrieval Augmented Generation)</strong> — padrão arquitetural que combina busca em base de conhecimento própria com geração de texto pela IA, garantindo que as respostas sejam fundamentadas em documentos reais do escritório.</li>
+</ul>
+
+<div class="box box-blue">
+  <strong>Por que RAG e não um chatbot comum?</strong>
+  Um chatbot comum (como o ChatGPT sem personalização) só conhece o que foi treinado. O sistema RAG alimenta a IA com os documentos <em>reais do seu escritório</em> no momento da consulta. Isso significa que as respostas são baseadas nas suas teses específicas, não em conhecimento genérico da internet.
+</div>
+
+
+<!-- 2. O QUE É RAG -->
+<h2>2. O que é RAG (Retrieval Augmented Generation)</h2>
+
+<p>RAG é o padrão arquitetural mais adotado atualmente para construir sistemas de IA sobre bases de conhecimento privadas. O nome traduz exatamente o que acontece:</p>
+
+<ul>
+  <li><strong>Retrieval</strong> (Recuperação): busca os documentos mais relevantes na base</li>
+  <li><strong>Augmented</strong> (Aumentado): aumenta o contexto enviado para a IA com esses documentos</li>
+  <li><strong>Generation</strong> (Geração): a IA gera a resposta usando esse contexto como base</li>
+</ul>
+
+<h3>O problema que o RAG resolve</h3>
+
+<p>Modelos de linguagem como o GPT-4o são treinados com dados públicos até uma data de corte. Eles não conhecem:</p>
+<ul>
+  <li>As teses específicas do seu escritório</li>
+  <li>Documentos confidenciais ou internos</li>
+  <li>Argumentos construídos pela sua equipe ao longo dos anos</li>
+</ul>
+
+<p>Com RAG, esses documentos são incluídos dinamicamente em cada consulta. A IA recebe: <em>"Aqui estão os 8 trechos mais relevantes do acervo. Agora analise e responda."</em></p>
+
+<h3>Fluxo conceitual do RAG</h3>
+<div class="diagram">
+FASE 1 — INDEXAÇÃO (feita uma vez, ou quando documentos mudam)
+
+  Documento PDF/DOCX
+        │
+        ▼
+  Extração de Texto
+        │
+        ▼
+  Divisão em Chunks (pedaços menores)
+        │
+        ▼
+  Geração de Embeddings (vetor numérico que representa o significado)
+        │
+        ▼
+  Armazenamento no Banco Vetorial (Supabase pgvector)
+
+
+FASE 2 — CONSULTA (em tempo real, a cada busca)
+
+  Pergunta do Advogado
+        │
+        ▼
+  Geração do Embedding da Pergunta
+        │
+        ▼
+  Busca por Similaridade no Banco Vetorial
+  (encontra os chunks mais próximos semanticamente)
+        │
+        ▼
+  Os N chunks mais relevantes são enviados ao GPT-4o
+        │
+        ▼
+  GPT-4o gera análise estratégica baseada nesses documentos
+        │
+        ▼
+  Resposta para o Advogado (análise + documentos com links)</div>
+
+
+<!-- 3. ARQUITETURA -->
+<h2>3. Arquitetura Completa</h2>
+
+<div class="badges">
+  <span class="badge">Python 3.12</span>
+  <span class="badge">FastAPI</span>
+  <span class="badge">Supabase (PostgreSQL + pgvector)</span>
+  <span class="badge">OpenAI API</span>
+  <span class="badge">Google Drive API</span>
+  <span class="badge">Next.js 16</span>
+  <span class="badge">Tailwind CSS 4</span>
+  <span class="badge">Render.com</span>
+  <span class="badge">Netlify</span>
+</div>
+
+<div class="diagram">
+┌─────────────────────────────────────────────────────────────────────┐
+│                         CLIENTE (Browser)                           │
+│                    Next.js 16 + Tailwind CSS 4                      │
+│                      Hospedado no Netlify                           │
+└─────────────────────────┬───────────────────────────────────────────┘
+                          │  HTTPS — POST /api/search
+                          │          POST /api/index
+                          ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      BACKEND (FastAPI)                              │
+│                     Python 3.12 — Render.com                       │
+│                                                                     │
+│   ┌─────────────┐  ┌──────────────┐  ┌────────────────────────┐   │
+│   │  /api/search│  │ /api/index   │  │       /health          │   │
+│   └──────┬──────┘  └──────┬───────┘  └────────────────────────┘   │
+│          │                │                                         │
+│   ┌──────▼──────┐  ┌──────▼───────┐                               │
+│   │  Embedding  │  │ Drive Service│                               │
+│   │  Service    │  │ (listagem +  │                               │
+│   └──────┬──────┘  │  extração)   │                               │
+│          │         └──────┬───────┘                               │
+│   ┌──────▼──────┐  ┌──────▼───────┐                               │
+│   │  Vector     │  │  Chunking    │                               │
+│   │  Service    │  │  Service     │                               │
+│   └──────┬──────┘  └──────┬───────┘                               │
+│          │                │                                         │
+│   ┌──────▼────────────────▼───────┐                               │
+│   │         OpenAI Service        │                               │
+│   │   (análise com GPT-4o)        │                               │
+│   └───────────────────────────────┘                               │
+└────────┬──────────────────┬────────────────────────────────────────┘
+         │                  │
+         ▼                  ▼
+┌──────────────┐   ┌──────────────────┐
+│   Supabase   │   │  Google Drive    │
+│  pgvector    │   │  (documentos)    │
+│  PostgreSQL  │   │  Service Account │
+└──────────────┘   └──────────────────┘
+         │
+         ▼
+┌──────────────┐
+│   OpenAI API │
+│  Embeddings  │
+│  + GPT-4o    │
+└──────────────┘</div>
+
+<h3>Estrutura de arquivos do projeto</h3>
+<pre><code>legal-assistant/
+├── backend/                              # API Python
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── search.py                # POST /api/search
+│   │   │   ├── index.py                 # POST /api/index
+│   │   │   └── health.py                # GET /health
+│   │   ├── core/
+│   │   │   ├── config.py                # Leitura das variáveis de ambiente
+│   │   │   └── supabase.py              # Conexão com o Supabase
+│   │   ├── models/
+│   │   │   └── schemas.py               # Contratos de dados (Pydantic)
+│   │   ├── services/
+│   │   │   ├── drive_service.py         # Google Drive: listar e extrair
+│   │   │   ├── chunking_service.py      # Divisão inteligente do texto
+│   │   │   ├── embedding_service.py     # Geração de embeddings (OpenAI)
+│   │   │   ├── vector_service.py        # Busca e escrita no Supabase
+│   │   │   └── openai_service.py        # Análise com GPT-4o
+│   │   └── main.py                      # Entrypoint + configuração CORS
+│   ├── credentials/                     # Service Account JSON (não commitado)
+│   ├── .env                             # Credenciais locais (não commitado)
+│   ├── .env.example                     # Template seguro
+│   ├── .python-version                  # Fixa Python 3.12
+│   ├── render.yaml                      # Configuração do Render.com
+│   └── requirements.txt
+│
+└── frontend/                            # Interface Next.js
+    ├── src/
+    │   ├── app/
+    │   │   ├── components/
+    │   │   │   ├── SearchPanel.tsx      # Formulário de busca
+    │   │   │   ├── AiAnalysis.tsx       # Card da análise da IA
+    │   │   │   ├── DocumentCard.tsx     # Card de cada documento
+    │   │   │   └── ScoreBadge.tsx       # Badge de relevância
+    │   │   ├── layout.tsx               # Layout raiz
+    │   │   └── page.tsx                 # Página principal
+    │   └── lib/
+    │       ├── api.ts                   # Cliente HTTP
+    │       └── types.ts                 # Tipos TypeScript
+    ├── .env.local                       # URL do backend (não commitado)
+    └── netlify.toml                     # Configuração do Netlify</code></pre>
+
+
+<!-- 4. PIPELINE DE INDEXAÇÃO -->
+<h2>4. Pipeline de Indexação</h2>
+
+<p>A indexação é o processo de preparar os documentos para que possam ser buscados. É feita chamando <code>POST /api/index</code> e pode ser repetida quando novos documentos são adicionados ao Drive. O sistema é inteligente: <strong>não reindexia arquivos que não foram modificados</strong>, economizando tempo e custo de API.</p>
+
+<div class="diagram">
+POST /api/index
+      │
+      ▼
+1. Listar arquivos no Google Drive (recursivo em subpastas)
+      │
+      ├─── Para cada arquivo:
+      │         │
+      │         ▼
+      │    2. Verificar se o arquivo mudou desde a última indexação
+      │         │ (comparando modifiedTime com o valor salvo no Supabase)
+      │         │
+      │         ├── Não mudou → IGNORAR (status: "ignorado")
+      │         │
+      │         └── Mudou ou novo:
+      │                   │
+      │                   ▼
+      │              3. Extrair texto do arquivo
+      │                 (.pdf → PyMuPDF | .docx → python-docx | Google Doc → export)
+      │                   │
+      │                   ▼
+      │              4. Dividir em chunks jurídicos
+      │                 (respeitando seções: EMENTA, FUNDAMENTAÇÃO, etc.)
+      │                   │
+      │                   ▼
+      │              5. Gerar embeddings em batch via OpenAI
+      │                 (um vetor de 1536 dimensões por chunk)
+      │                   │
+      │                   ▼
+      │              6. Deletar chunks antigos (se reindexando)
+      │                   │
+      │                   ▼
+      │              7. Salvar novos chunks no Supabase
+      │                 (texto + embedding + metadados)
+      │
+      ▼
+Retorna relatório: indexados / atualizados / ignorados / erros</div>
+
+<h3>Controle de versão dos documentos</h3>
+<p>Cada arquivo no Google Drive possui um campo <code>modifiedTime</code> (data/hora da última modificação). O sistema salva esse valor junto com o chunk no Supabase. Na próxima indexação, compara o valor atual do Drive com o salvo — se forem iguais, o arquivo não mudou e é pulado. Se mudou, os chunks antigos são deletados e o arquivo é reprocessado do zero.</p>
+
+<div class="box box-green">
+  <strong>Custo de reindexação</strong>
+  Cada chamada à API de embeddings da OpenAI tem um custo. O controle de versão garante que só arquivos modificados ou novos geram custo. Para um acervo de 100 documentos onde apenas 5 foram alterados, o custo é de apenas 5 arquivos.
+</div>
+
+
+<!-- 5. PIPELINE DE BUSCA -->
+<h2>5. Pipeline de Busca</h2>
+
+<p>A busca acontece em tempo real (em poucos segundos) quando o advogado submete uma consulta pelo frontend.</p>
+
+<div class="diagram">
+POST /api/search  { "query": "empregado alega assédio moral..." }
+      │
+      ▼
+1. Validar a query (não vazia, máx. 2000 caracteres)
+      │
+      ▼
+2. Gerar embedding da query
+   OpenAI text-embedding-3-small → vetor de 1536 números
+   Exemplo: [0.0023, -0.0891, 0.1234, ..., 0.0056]  ← representação do SIGNIFICADO
+      │
+      ▼
+3. Busca por similaridade coseno no Supabase
+   Função SQL: match_teses(query_embedding, match_count=8, match_threshold=0.3)
+   → Retorna os 8 chunks com similaridade > 30%, ordenados do mais ao menos relevante
+      │
+      ▼
+4. Enviar chunks para o GPT-4o
+   System prompt: "Você é um assistente jurídico especializado em Direito do Trabalho..."
+   User prompt:   query + os 8 trechos encontrados com seus scores de relevância
+      │
+      ▼
+5. GPT-4o gera análise com:
+   - Teses mais relevantes para o caso
+   - Como usar cada tese para rebater o argumento
+   - Ordem sugerida dos argumentos (do mais ao menos forte)
+   - Jurisprudências e fundamentos legais mencionados
+      │
+      ▼
+6. Retornar ao frontend:
+   { resumo_ia, resultados: [...], total_encontrado }</div>
+
+
+<!-- 6. GOOGLE DRIVE -->
+<h2>6. Google Drive — Integração e Extração de Texto</h2>
+
+<p>O Google Drive funciona como o repositório central dos documentos. A integração usa uma <strong>Service Account</strong> — uma conta de serviço do Google Cloud que permite ao backend acessar o Drive programaticamente, sem precisar de login manual.</p>
+
+<h3>Como funciona a autenticação</h3>
+<p>O Google Cloud fornece um arquivo JSON com uma chave privada RSA para a service account. O backend usa esse JSON para se autenticar e receber um token de acesso temporário. Em produção (Render.com), o conteúdo JSON é armazenado como variável de ambiente para evitar arquivos físicos no servidor.</p>
+
+<p>O código detecta automaticamente se o valor em <code>GOOGLE_SERVICE_ACCOUNT_JSON</code> começa com <code>{</code> (JSON inline, usado em produção) ou é um caminho de arquivo (usado localmente):</p>
+
+<pre><code>def _get_drive_service():
+    value = settings.GOOGLE_SERVICE_ACCOUNT_JSON.strip()
+    if value.startswith("{"):
+        # Produção: JSON inline como variável de ambiente
+        info = json.loads(value)
+        creds = service_account.Credentials.from_service_account_info(info, scopes=SCOPES)
+    else:
+        # Local: caminho para o arquivo JSON
+        creds = service_account.Credentials.from_service_account_file(value, scopes=SCOPES)
+    return build("drive", "v3", credentials=creds, cache_discovery=False)</code></pre>
+
+<h3>Listagem recursiva de subpastas</h3>
+<p>O sistema percorre todas as subpastas recursivamente a partir de uma pasta raiz configurada. Isso significa que a estrutura de organização do Drive pode ser tão aninhada quanto necessário — o sistema encontrará todos os documentos:</p>
+
+<pre><code>def _listar_recursivo(service, folder_id, resultado):
+    query = f"'{folder_id}' in parents and trashed = false"
+    # Para cada item na pasta:
+    for arquivo in response["files"]:
+        if arquivo["mimeType"] == "application/vnd.google-apps.folder":
+            _listar_recursivo(service, arquivo["id"], resultado)  # entra na subpasta
+        elif mime suportado:
+            resultado.append(arquivo)  # adiciona o arquivo à lista</code></pre>
+
+<h3>Formatos suportados</h3>
+<table>
+  <tr><th>Formato</th><th>Estratégia de extração</th><th>Biblioteca</th></tr>
+  <tr><td>Google Docs</td><td>Export como texto plano via API do Drive</td><td>google-api-python-client</td></tr>
+  <tr><td>.pdf</td><td>Extração página a página</td><td>PyMuPDF (fitz)</td></tr>
+  <tr><td>.docx</td><td>Leitura de parágrafos</td><td>python-docx</td></tr>
+  <tr><td>.txt</td><td>Leitura direta UTF-8</td><td>nativo Python</td></tr>
+</table>
+
+
+<!-- 7. CHUNKING -->
+<h2>7. Chunking Jurídico — Divisão Inteligente de Texto</h2>
+
+<p>Um problema fundamental de RAG é que modelos de linguagem têm um limite de contexto — não é possível enviar um documento inteiro de 50 páginas. A solução é dividir os documentos em pedaços menores chamados <strong>chunks</strong>, que são armazenados e buscados individualmente.</p>
+
+<p>A divisão ingênua (ex: a cada 1000 caracteres) quebraria argumentos jurídicos no meio de uma fundamentação. O sistema usa uma estratégia em três camadas:</p>
+
+<h3>Camada 1 — Divisão por seções jurídicas</h3>
+<p>O chunking identifica marcadores de seções jurídicas comuns nos documentos e usa-os como fronteiras naturais. As seções reconhecidas incluem:</p>
+<pre><code>EMENTA, ACÓRDÃO, RELATÓRIO, FUNDAMENTAÇÃO, FUNDAMENTOS,
+DISPOSITIVO, CONCLUSÃO, DOS FATOS, DO DIREITO, DO PEDIDO,
+PEDIDO, TESE, numerações romanas (I –, II –, III –),
+títulos numerados (1. RESCISÃO INDIRETA, 2. HORAS EXTRAS...)</code></pre>
+
+<h3>Camada 2 — Subdivisão por parágrafos</h3>
+<p>Se uma seção for muito grande (superar o limite de tokens configurado), ela é subdividida por parágrafos. O limite padrão é de <strong>800 tokens por chunk</strong> (aproximadamente 600 palavras).</p>
+
+<h3>Camada 3 — Overlap entre chunks</h3>
+<p>Para evitar que um argumento que cruza a fronteira entre dois chunks seja perdido, o sistema aplica um <strong>overlap de 100 tokens</strong>: o início de cada novo chunk repete o final do chunk anterior. Isso garante que o contexto seja preservado nas bordas.</p>
+
+<div class="box box-amber">
+  <strong>Por que 800 tokens e não mais?</strong>
+  Chunks maiores carregam mais contexto, mas reduzem a precisão da busca semântica (o embedding representa um texto mais "médio" e menos específico). Chunks menores são mais precisos, mas podem perder contexto. 800 tokens é o equilíbrio encontrado para documentos jurídicos longos.
+</div>
+
+<h3>Estimativa de tokens</h3>
+<p>O sistema usa uma estimativa simplificada de 1 token ≈ 4 caracteres. Essa heurística funciona bem para textos em português, onde a maioria das palavras tem entre 1 e 2 tokens no tokenizador da OpenAI.</p>
+
+
+<!-- 8. EMBEDDINGS -->
+<h2>8. Embeddings — Representação Vetorial do Texto</h2>
+
+<p>Um <strong>embedding</strong> é a representação numérica do <em>significado</em> de um texto. É um vetor (lista) de números de ponto flutuante, onde textos semanticamente similares produzem vetores matematicamente próximos.</p>
+
+<h3>Como um embedding captura significado</h3>
+<p>Considere três frases:</p>
+<ul>
+  <li>"O empregado foi demitido sem justa causa"</li>
+  <li>"O trabalhador teve seu contrato encerrado sem motivo"</li>
+  <li>"O preço do café subiu esta semana"</li>
+</ul>
+<p>As duas primeiras, apesar de usarem palavras diferentes, ficam muito próximas no espaço vetorial. A terceira fica distante. É assim que a busca semântica encontra resultados relevantes mesmo que o advogado use vocabulário diferente do documento.</p>
+
+<h3>O modelo usado: text-embedding-3-small</h3>
+<table>
+  <tr><th>Propriedade</th><th>Valor</th></tr>
+  <tr><td>Modelo</td><td>text-embedding-3-small (OpenAI)</td></tr>
+  <tr><td>Dimensões do vetor</td><td>1536 números por texto</td></tr>
+  <tr><td>Custo</td><td>~$0,02 por 1 milhão de tokens</td></tr>
+  <tr><td>Contexto máximo</td><td>8.191 tokens por chamada</td></tr>
+  <tr><td>Velocidade</td><td>Muito rápido — adequado para uso em tempo real</td></tr>
+</table>
+
+<h3>Geração em batch para eficiência</h3>
+<p>Ao indexar um documento com muitos chunks, o sistema agrupa todos em uma única chamada à API (batch), reduzindo o número de requisições e o tempo total:</p>
+
+<pre><code>async def gerar_embeddings_batch(textos: List[str]) -> List[List[float]]:
+    response = await client.embeddings.create(
+        model="text-embedding-3-small",
+        input=textos  # envia todos os chunks de uma vez
+    )
+    return [item.embedding for item in response.data]</code></pre>
+
+
+<!-- 9. SUPABASE E PGVECTOR -->
+<h2>9. Supabase e pgvector — Banco Vetorial</h2>
+
+<p>O Supabase é um banco de dados PostgreSQL gerenciado com funcionalidades adicionais (autenticação, storage, realtime). Para este sistema, usa-se o <strong>pgvector</strong>, extensão do PostgreSQL que adiciona suporte nativo a vetores e busca por similaridade.</p>
+
+<h3>Por que Supabase e não um banco vetorial dedicado (Pinecone, Weaviate)?</h3>
+<div class="box box-blue">
+  Bancos vetoriais dedicados são otimizados para escala massiva. Para um acervo jurídico de até alguns milhares de documentos, o pgvector no Supabase oferece performance excelente com muito menos complexidade operacional — e com plano gratuito generoso.
+</div>
+
+<h3>Estrutura da tabela</h3>
+<pre><code>CREATE TABLE teses (
+    id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    arquivo_nome          TEXT NOT NULL,         -- nome do arquivo no Drive
+    arquivo_id            TEXT NOT NULL,         -- ID único no Google Drive
+    arquivo_link          TEXT,                  -- URL para abrir no Drive
+    arquivo_modified_time TEXT,                  -- data de modificação (controle de versão)
+    chunk_index           INTEGER NOT NULL,      -- posição do chunk no arquivo (0, 1, 2...)
+    conteudo              TEXT NOT NULL,         -- o texto do chunk
+    embedding             VECTOR(1536),          -- o vetor de 1536 dimensões
+    pagina                INTEGER,               -- página do PDF (quando disponível)
+    created_at            TIMESTAMPTZ DEFAULT now()
+);</code></pre>
+
+<h3>Índice vetorial IVFFlat</h3>
+<p>Para busca eficiente em grandes volumes de vetores, o sistema cria um índice do tipo <strong>IVFFlat</strong> (Inverted File with Flat Compression):</p>
+
+<pre><code>CREATE INDEX teses_embedding_idx
+    ON teses USING ivfflat (embedding vector_cosine_ops)
+    WITH (lists = 100);</code></pre>
+
+<p>O parâmetro <code>lists = 100</code> divide o espaço vetorial em 100 clusters. Na busca, o PostgreSQL só compara com vetores do cluster mais próximo, tornando a busca muito mais rápida que comparar com todos os vetores. O valor ideal de <code>lists</code> é aproximadamente √N onde N é o número esperado de registros.</p>
+
+<h3>Similaridade coseno</h3>
+<p>A medida de proximidade usada é a <strong>similaridade coseno</strong>, que mede o ângulo entre dois vetores (e não a distância euclidiana). Isso é preferível para embeddings porque o comprimento do vetor não importa — só a direção, que representa o significado.</p>
+
+<ul>
+  <li>Similaridade = <strong>1.0</strong> → textos idênticos em significado</li>
+  <li>Similaridade = <strong>0.8+</strong> → muito relevante</li>
+  <li>Similaridade = <strong>0.5–0.8</strong> → moderadamente relevante</li>
+  <li>Similaridade = <strong>abaixo de 0.3</strong> → descartado pelo threshold</li>
+</ul>
+
+<p>O operador <code>&lt;=&gt;</code> no pgvector calcula a <strong>distância coseno</strong> (1 - similaridade). Por isso, a função SQL usa <code>1 - (embedding &lt;=&gt; query_embedding)</code> para obter a similaridade:</p>
+
+<pre><code>CREATE OR REPLACE FUNCTION match_teses(
+    query_embedding   VECTOR(1536),
+    match_count       INT     DEFAULT 8,
+    match_threshold   FLOAT   DEFAULT 0.3
+)
+RETURNS TABLE (id UUID, arquivo_nome TEXT, conteudo TEXT, similarity FLOAT, ...)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        t.id, t.arquivo_nome, t.conteudo,
+        1 - (t.embedding <=> query_embedding) AS similarity  -- similaridade coseno
+    FROM teses t
+    WHERE 1 - (t.embedding <=> query_embedding) > match_threshold  -- filtro de threshold
+    ORDER BY t.embedding <=> query_embedding  -- mais próximo primeiro
+    LIMIT match_count;
+END;
+$$;</code></pre>
+
+<h3>Row Level Security (RLS)</h3>
+<p>A tabela tem RLS habilitado. O backend usa a <strong>service_role key</strong> do Supabase, que bypassa o RLS automaticamente — isso garante acesso completo para o backend enquanto impede acesso não autorizado por outras vias.</p>
+
+
+<!-- 10. FASTAPI -->
+<h2>10. FastAPI — Backend e Endpoints</h2>
+
+<p>O FastAPI é um framework Python moderno para construção de APIs, com suporte nativo a programação assíncrona (async/await), tipagem via Pydantic e documentação automática. É um dos frameworks mais rápidos disponíveis para Python.</p>
+
+<h3>Configuração de CORS</h3>
+<p>CORS (Cross-Origin Resource Sharing) é o mecanismo de segurança do browser que controla quais origens podem fazer chamadas à API. O backend configura as origens permitidas via variável de ambiente:</p>
+
+<pre><code>app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.ALLOWED_ORIGINS,  # ["https://seu-site.netlify.app"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)</code></pre>
+
+<h3>Modelos de dados com Pydantic</h3>
+<p>Todos os contratos de entrada e saída da API são definidos como modelos Pydantic, que fazem validação automática, serialização e geração de documentação OpenAPI:</p>
+
+<pre><code>class SearchRequest(BaseModel):
+    query: str
+    top_k: Optional[int] = None       # sobrescreve o padrão (8) se informado
+
+class TrechodDoc(BaseModel):
+    chunk_id: str
+    arquivo_nome: str
+    arquivo_link: str
+    trecho: str
+    score: float                       # similaridade coseno (0-1)
+    pagina: Optional[int] = None
+
+class SearchResponse(BaseModel):
+    query: str
+    resumo_ia: str                     # análise do GPT-4o
+    resultados: List[TrechodDoc]
+    total_encontrado: int</code></pre>
+
+<h3>Endpoints</h3>
+<table>
+  <tr><th>Método</th><th>Endpoint</th><th>Descrição</th></tr>
+  <tr><td>GET</td><td>/health</td><td>Verifica status da API e conexão com Supabase</td></tr>
+  <tr><td>POST</td><td>/api/search</td><td>Busca semântica + análise por IA</td></tr>
+  <tr><td>POST</td><td>/api/index</td><td>Dispara indexação do Google Drive</td></tr>
+</table>
+
+<h3>Proteção contra indexações simultâneas</h3>
+<p>A indexação de muitos documentos pode levar vários minutos. Para evitar que duas indexações rodem ao mesmo tempo (o que causaria duplicação de dados), o sistema usa uma flag simples:</p>
+
+<pre><code>_indexando = False  # variável global
+
+@router.post("/index")
+async def indexar_drive(request: IndexRequest):
+    global _indexando
+    if _indexando:
+        raise HTTPException(409, "Indexação já em andamento.")
+    _indexando = True
+    resultado = await _executar_indexacao(...)
+    _indexando = False
+    return resultado</code></pre>
+
+
+<!-- 11. OPENAI GPT-4O -->
+<h2>11. OpenAI GPT-4o — Análise por IA</h2>
+
+<p>Após a busca vetorial retornar os chunks mais relevantes, eles são enviados ao GPT-4o para análise. O modelo recebe dois tipos de instruções:</p>
+
+<h3>System Prompt (instrução de papel)</h3>
+<p>Define o comportamento e especialização do modelo para todas as interações:</p>
+<pre><code>"Você é um assistente jurídico especializado em Direito do Trabalho brasileiro.
+Sua função é analisar teses jurídicas encontradas em uma base de documentos e ajudar
+advogados a identificar os melhores argumentos para rebater ações trabalhistas.
+Sempre responda em português brasileiro de forma técnica, clara e objetiva.
+Use terminologia jurídica adequada."</code></pre>
+
+<h3>User Prompt (instrução por consulta)</h3>
+<p>Inclui a consulta do advogado e os documentos encontrados. O modelo recebe instruções específicas de análise:</p>
+<ol>
+  <li>Identificar as teses mais relevantes para o caso</li>
+  <li>Explicar como cada tese pode ser usada para rebater o argumento</li>
+  <li>Sugerir a ordem de apresentação (do argumento mais forte ao mais fraco)</li>
+  <li>Apontar jurisprudências e fundamentos legais mencionados</li>
+</ol>
+
+<h3>Parâmetros de geração</h3>
+<table>
+  <tr><th>Parâmetro</th><th>Valor</th><th>Efeito</th></tr>
+  <tr><td>model</td><td>gpt-4o</td><td>Modelo mais capaz da OpenAI (Maio 2024)</td></tr>
+  <tr><td>max_tokens</td><td>1500</td><td>Limite da resposta (~1100 palavras)</td></tr>
+  <tr><td>temperature</td><td>padrão (1.0)</td><td>Respostas variadas mas coerentes</td></tr>
+</table>
+
+<div class="box box-amber">
+  <strong>Custo por consulta</strong>
+  Uma consulta típica envia ~3.000 tokens (query + 8 chunks) e recebe ~800 tokens. Com GPT-4o (~$5/1M tokens de entrada, ~$15/1M tokens de saída), o custo é de aproximadamente $0,03 por consulta.
+</div>
+
+
+<!-- 12. FRONTEND -->
+<h2>12. Frontend — Next.js + Tailwind CSS</h2>
+
+<p>O frontend é construído com Next.js 16 (App Router) e Tailwind CSS 4, hospedado no Netlify. A interface foi projetada para advogados: limpa, profissional e focada na tarefa.</p>
+
+<h3>Separação Server / Client Components</h3>
+<p>O Next.js App Router distingue dois tipos de componentes:</p>
+<ul>
+  <li><strong>Server Components</strong> (padrão): renderizados no servidor, sem JavaScript enviado ao cliente. Usados para o layout, cabeçalho e página principal.</li>
+  <li><strong>Client Components</strong> (marcados com <code>"use client"</code>): têm acesso a estado, eventos e APIs do browser. Usado para o formulário de busca e exibição de resultados.</li>
+</ul>
+
+<pre><code>// page.tsx — Server Component (sem JS no cliente)
+export default function Home() {
+  return (
+    &lt;main&gt;
+      &lt;Header /&gt;
+      &lt;SearchPanel /&gt;  {/* SearchPanel é Client Component */}
+    &lt;/main&gt;
+  );
+}
+
+// SearchPanel.tsx — Client Component (tem useState, fetch, eventos)
+"use client";
+export function SearchPanel() {
+  const [query, setQuery] = useState("");
+  const [data, setData] = useState(null);
+  // ...
+}</code></pre>
+
+<h3>Componentes principais</h3>
+<table>
+  <tr><th>Componente</th><th>Tipo</th><th>Função</th></tr>
+  <tr><td>SearchPanel</td><td>Client</td><td>Textarea, botão, atalho Ctrl+Enter, chips de exemplo, loading, erro</td></tr>
+  <tr><td>AiAnalysis</td><td>Client</td><td>Exibe o resumo da IA preservando parágrafos</td></tr>
+  <tr><td>DocumentCard</td><td>Client</td><td>Mostra nome, página, trecho e link para o Drive</td></tr>
+  <tr><td>ScoreBadge</td><td>Client</td><td>Badge colorido: verde ≥80%, azul ≥60%, âmbar ≥40%</td></tr>
+</table>
+
+<h3>Cliente HTTP</h3>
+<p>As chamadas ao backend são feitas via <code>fetch</code> nativo, com tratamento de erros:</p>
+<pre><code>export async function searchTeses(payload: SearchRequest): Promise&lt;SearchResponse&gt; {
+  const res = await fetch(`${API_URL}/api/search`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data?.detail ?? `Erro ${res.status}`);
+  }
+  return res.json();
+}</code></pre>
+
+<h3>Skeleton de loading</h3>
+<p>Enquanto a resposta do backend é aguardada (normalmente 5–15 segundos, considerando embedding + busca + GPT-4o), o frontend exibe um skeleton animado que replica o layout da resposta real, evitando a percepção de "tela travada".</p>
+
+
+<!-- 13. INFRAESTRUTURA -->
+<h2>13. Infraestrutura e Deploy</h2>
+
+<h3>Visão geral dos serviços</h3>
+<table>
+  <tr><th>Componente</th><th>Serviço</th><th>URL de produção</th><th>Plano</th></tr>
+  <tr><td>Backend (FastAPI)</td><td>Render.com</td><td>legal-assistant-wge8.onrender.com</td><td>Free (com cold start)</td></tr>
+  <tr><td>Frontend (Next.js)</td><td>Netlify</td><td>(configurado no deploy)</td><td>Free</td></tr>
+  <tr><td>Banco + pgvector</td><td>Supabase</td><td>Projeto dedicado</td><td>Free</td></tr>
+  <tr><td>Embeddings</td><td>OpenAI API</td><td>—</td><td>Pay per use</td></tr>
+  <tr><td>Análise IA</td><td>OpenAI API</td><td>—</td><td>Pay per use</td></tr>
+  <tr><td>Documentos</td><td>Google Drive</td><td>—</td><td>Existente</td></tr>
+</table>
+
+<h3>Deploy contínuo</h3>
+<p>Ambos Render e Netlify monitoram o repositório GitHub. Qualquer <code>git push</code> na branch <code>main</code> dispara um novo deploy automático. O processo completo leva cerca de 1–2 minutos (após o primeiro, que é mais lento por falta de cache).</p>
+
+<h3>Cold Start no Render (plano gratuito)</h3>
+<p>No plano gratuito do Render, o servidor hiberna após 15 minutos sem tráfego. A primeira requisição após o período de hibernação acorda o servidor, o que pode levar 20–30 segundos. As requisições subsequentes são normais. Para uso interno em escritório, isso costuma ser aceitável.</p>
+
+<h3>Configuração Python no Render</h3>
+<p>O arquivo <code>.python-version</code> na raiz do backend fixa a versão do Python em 3.12. Isso é necessário porque versões mais recentes do Python (3.13+) ainda não possuem wheels pré-compilados para todas as dependências, o que causaria falha no build.</p>
+
+<h3>Variáveis de ambiente</h3>
+<p>Nenhuma credencial é armazenada no repositório. Todas as chaves são configuradas nos painéis de cada serviço:</p>
+<table>
+  <tr><th>Variável</th><th>Onde configurar</th><th>O que é</th></tr>
+  <tr><td>SUPABASE_URL</td><td>Render</td><td>URL do projeto Supabase</td></tr>
+  <tr><td>SUPABASE_SERVICE_KEY</td><td>Render</td><td>Chave service_role (acesso total)</td></tr>
+  <tr><td>OPENAI_API_KEY</td><td>Render</td><td>Chave da API OpenAI</td></tr>
+  <tr><td>GOOGLE_SERVICE_ACCOUNT_JSON</td><td>Render</td><td>Conteúdo JSON da service account</td></tr>
+  <tr><td>GOOGLE_DRIVE_FOLDER_ID</td><td>Render</td><td>ID da pasta raiz no Drive</td></tr>
+  <tr><td>ALLOWED_ORIGINS</td><td>Render</td><td>URLs autorizadas pelo CORS</td></tr>
+  <tr><td>NEXT_PUBLIC_API_URL</td><td>Netlify</td><td>URL do backend no Render</td></tr>
+</table>
+
+
+<!-- 14. SEGURANÇA -->
+<h2>14. Segurança</h2>
+
+<h3>O que está protegido</h3>
+<ul>
+  <li><strong>.env</strong> e <strong>credentials/</strong> estão no <code>.gitignore</code> e nunca são commitados</li>
+  <li><strong>Service keys</strong> ficam apenas nas variáveis de ambiente dos serviços de hospedagem (criptografadas em repouso)</li>
+  <li><strong>CORS</strong> restringe chamadas ao backend apenas para origens autorizadas</li>
+  <li><strong>RLS</strong> no Supabase impede acesso direto ao banco via chave pública</li>
+  <li><strong>NEXT_PUBLIC_</strong> no frontend: apenas a URL do backend é exposta no cliente (não há credenciais)</li>
+</ul>
+
+<h3>O que ainda pode ser melhorado</h3>
+<ul>
+  <li>Adicionar autenticação no backend (Basic Auth ou JWT) para proteger os endpoints de acesso não autorizado — atualmente qualquer pessoa com a URL do Render pode chamar a API</li>
+  <li>Rate limiting para evitar uso excessivo e custos inesperados na OpenAI</li>
+  <li>Logs de auditoria das consultas realizadas</li>
+</ul>
+
+<div class="box box-amber">
+  <strong>Atenção às chaves da OpenAI</strong>
+  A chave da OpenAI tem acesso de faturamento direto. Configure limites de gasto mensais no painel da OpenAI (Settings → Limits) para evitar custos inesperados em caso de uso indevido.
+</div>
+
+
+<!-- 15. GLOSSÁRIO -->
+<h2>15. Glossário</h2>
+
+<table>
+  <tr><th>Termo</th><th>Definição</th></tr>
+  <tr><td>RAG</td><td>Retrieval Augmented Generation — padrão que combina busca em base de conhecimento com geração de texto por IA</td></tr>
+  <tr><td>Embedding</td><td>Representação numérica vetorial do significado de um texto</td></tr>
+  <tr><td>Chunk</td><td>Fragmento de texto gerado ao dividir um documento maior</td></tr>
+  <tr><td>Chunking</td><td>Processo de dividir documentos em chunks menores</td></tr>
+  <tr><td>Similaridade coseno</td><td>Medida de proximidade entre vetores baseada no ângulo entre eles (0 = opostos, 1 = idênticos)</td></tr>
+  <tr><td>pgvector</td><td>Extensão do PostgreSQL que adiciona tipo de dado vetorial e funções de busca por similaridade</td></tr>
+  <tr><td>IVFFlat</td><td>Algoritmo de índice vetorial aproximado que organiza vetores em clusters para busca eficiente</td></tr>
+  <tr><td>LLM</td><td>Large Language Model — modelo de linguagem de grande escala (ex: GPT-4o)</td></tr>
+  <tr><td>Service Account</td><td>Conta de serviço do Google Cloud usada para autenticação programática (sem login manual)</td></tr>
+  <tr><td>CORS</td><td>Cross-Origin Resource Sharing — mecanismo do browser que controla acesso entre origens diferentes</td></tr>
+  <tr><td>RLS</td><td>Row Level Security — controle de acesso por linha no PostgreSQL</td></tr>
+  <tr><td>Pydantic</td><td>Biblioteca Python para validação de dados e serialização via tipagem</td></tr>
+  <tr><td>FastAPI</td><td>Framework Python para APIs com suporte a async/await e geração automática de documentação</td></tr>
+  <tr><td>Cold Start</td><td>Atraso na primeira requisição após período de inatividade em servidores com hibernação</td></tr>
+  <tr><td>Overlap</td><td>Sobreposição intencional entre chunks consecutivos para preservar contexto nas bordas</td></tr>
+  <tr><td>Token</td><td>Unidade de processamento dos LLMs — aproximadamente 4 caracteres ou 0,75 palavras em português</td></tr>
+</table>
+
+<hr class="section-divider">
+<p style="text-align:center; font-size:9pt; color:#94a3b8; font-family:Arial,sans-serif;">
+  Sistema de Teses Jurídicas Trabalhistas &nbsp;·&nbsp; Documentação Técnica v1.0 &nbsp;·&nbsp; Abril 2025<br>
+  github.com/FilipeOMiranda/legal-assistant
+</p>
+
+</body>
+</html>
