@@ -1,129 +1,120 @@
-# 🏛️ Teses Jurídicas Trabalhistas — Backend
+# Teses Jurídicas Trabalhistas — Sistema de Busca Inteligente
 
-Sistema de busca inteligente de teses jurídicas com Google Drive + pgvector + Claude.
+Sistema completo de busca semântica de teses jurídicas trabalhistas com análise por IA. O advogado descreve o argumento que precisa rebater e o sistema localiza automaticamente os trechos mais relevantes do acervo, gerando uma análise estratégica.
 
 ---
 
-## 📁 Estrutura do Projeto
+## Como funciona
 
 ```
-backend/
-├── app/
-│   ├── api/
-│   │   ├── health.py        # GET /health
-│   │   ├── search.py        # POST /api/search
-│   │   └── index.py         # POST /api/index
-│   ├── core/
-│   │   ├── config.py        # Variáveis de ambiente (pydantic-settings)
-│   │   └── supabase.py      # Cliente Supabase singleton
-│   ├── models/
-│   │   └── schemas.py       # Modelos Pydantic (request/response)
-│   ├── services/
-│   │   ├── drive_service.py     # Listagem e extração de texto do Drive
-│   │   ├── chunking_service.py  # Divisão inteligente de texto jurídico
-│   │   ├── embedding_service.py # Geração de embeddings via OpenAI
-│   │   ├── vector_service.py    # Busca vetorial no Supabase
-│   │   └── claude_service.py    # Análise e resumo via Claude
-│   └── main.py              # Entrypoint FastAPI
-├── credentials/             # NÃO commitar — adicionar ao .gitignore
-│   └── google-service-account.json
-├── .env.example
-├── .env                     # NÃO commitar
-└── requirements.txt
+Advogado digita o argumento
+        ↓
+Frontend (Next.js) envia para o Backend (FastAPI)
+        ↓
+Backend gera embedding vetorial da consulta (OpenAI)
+        ↓
+Busca semântica no Supabase (pgvector) — similaridade coseno
+        ↓
+Trechos mais relevantes são analisados pela IA (OpenAI GPT-4o)
+        ↓
+Retorna: análise estratégica + documentos com link para o Drive
 ```
 
 ---
 
-## 🚀 Setup Passo a Passo
+## Arquitetura
 
-### 1. Supabase
-
-1. Criar conta em https://supabase.com e criar um novo projeto
-2. Ir em **SQL Editor** e executar todo o conteúdo de `../docs/supabase_setup.sql`
-3. Ir em **Project Settings > API** e copiar:
-   - `Project URL` → `SUPABASE_URL`
-   - `service_role` secret key → `SUPABASE_SERVICE_KEY` ⚠️ nunca expor no frontend
-
-### 2. Google Drive API
-
-1. Acessar https://console.cloud.google.com
-2. Criar um projeto (ou usar um existente)
-3. Ativar a **Google Drive API**
-4. Ir em **IAM & Admin > Service Accounts** e criar uma Service Account
-5. Baixar a chave JSON e salvar em `credentials/google-service-account.json`
-6. No Google Drive, **compartilhar a pasta de teses** com o e-mail da Service Account (permissão de Leitor)
-7. Copiar o ID da pasta da URL do Drive → `GOOGLE_DRIVE_FOLDER_ID`
-
-### 3. OpenAI
-
-1. Acessar https://platform.openai.com/api-keys
-2. Criar uma API key → `OPENAI_API_KEY`
-3. Custo estimado para indexar 500 docs: ~$0.50 com `text-embedding-3-small`
-
-### 4. Anthropic
-
-1. Acessar https://console.anthropic.com/settings/keys
-2. Criar uma API key → `ANTHROPIC_API_KEY`
-
-### 5. Configurar o .env
-
-```bash
-cp .env.example .env
-# Editar .env com suas credenciais
 ```
-
-### 6. Instalar dependências e rodar
-
-```bash
-# Criar ambiente virtual
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# venv\Scripts\activate   # Windows
-
-# Instalar dependências
-pip install -r requirements.txt
-
-# Rodar o servidor
-uvicorn app.main:app --reload --port 8000
-```
-
-### 7. Testar
-
-```bash
-# Health check
-curl http://localhost:8000/health
-
-# Indexar os arquivos do Drive (primeira vez)
-curl -X POST http://localhost:8000/api/index \
-  -H "Content-Type: application/json" \
-  -d '{"force_reindex": false}'
-
-# Buscar teses
-curl -X POST http://localhost:8000/api/search \
-  -H "Content-Type: application/json" \
-  -d '{"query": "rescisão indireta por falta de pagamento de salário"}'
+legal-assistant/
+├── backend/                         # FastAPI — Python 3.12
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── health.py            # GET /health
+│   │   │   ├── search.py            # POST /api/search
+│   │   │   └── index.py             # POST /api/index
+│   │   ├── core/
+│   │   │   ├── config.py            # Variáveis de ambiente (pydantic-settings)
+│   │   │   └── supabase.py          # Cliente Supabase singleton
+│   │   ├── models/
+│   │   │   └── schemas.py           # Modelos Pydantic (request/response)
+│   │   ├── services/
+│   │   │   ├── drive_service.py     # Listagem recursiva e extração de texto do Drive
+│   │   │   ├── chunking_service.py  # Divisão inteligente de texto jurídico
+│   │   │   ├── embedding_service.py # Geração de embeddings via OpenAI
+│   │   │   ├── vector_service.py    # Busca vetorial no Supabase
+│   │   │   └── openai_service.py    # Análise e resumo via GPT-4o
+│   │   └── main.py                  # Entrypoint FastAPI + CORS
+│   ├── credentials/                 # NÃO commitar — gitignored
+│   │   └── google-service-account.json
+│   ├── .env                         # NÃO commitar — gitignored
+│   ├── .env.example                 # Template seguro (sem credenciais reais)
+│   ├── .python-version              # Fixa Python 3.12 no Render
+│   ├── render.yaml                  # Configuração de deploy no Render.com
+│   └── requirements.txt
+│
+└── frontend/                        # Next.js 16 + Tailwind CSS 4
+    ├── src/
+    │   ├── app/
+    │   │   ├── components/
+    │   │   │   ├── SearchPanel.tsx   # Formulário de busca (Client Component)
+    │   │   │   ├── AiAnalysis.tsx    # Card com análise da IA
+    │   │   │   ├── DocumentCard.tsx  # Card por documento encontrado
+    │   │   │   └── ScoreBadge.tsx    # Badge de similaridade colorido
+    │   │   ├── layout.tsx
+    │   │   ├── page.tsx
+    │   │   └── globals.css
+    │   └── lib/
+    │       ├── api.ts                # Cliente HTTP para o backend
+    │       └── types.ts              # Tipos TypeScript espelhando os schemas
+    ├── .env.local                    # NÃO commitar — gitignored
+    ├── netlify.toml                  # Configuração de deploy no Netlify
+    └── package.json
 ```
 
 ---
 
-## 📖 Endpoints
+## O que o sistema faz
+
+### Indexação (`POST /api/index`)
+- Conecta ao Google Drive via Service Account
+- Lista recursivamente **todos os arquivos em todas as subpastas** da pasta configurada
+- Suporta: `.pdf`, `.docx`, Google Docs e `.txt`
+- Extrai o texto de cada arquivo
+- Divide o texto em chunks com sobreposição inteligente (evita cortar argumentos jurídicos no meio)
+- Gera embeddings vetoriais para cada chunk via OpenAI `text-embedding-3-small`
+- Salva no Supabase com controle de versão — arquivos não modificados são ignorados no reindexamento
+- Retorna relatório detalhado: indexados, atualizados, ignorados e erros
+
+### Busca (`POST /api/search`)
+- Gera embedding da consulta do advogado
+- Busca por similaridade coseno no Supabase (pgvector) retornando os chunks mais relevantes
+- Envia os trechos encontrados para o GPT-4o gerar uma análise estratégica consolidada
+- Retorna: análise da IA + lista de documentos com score de similaridade e link direto para o Drive
+
+### Frontend
+- Interface limpa e profissional voltada para advogados
+- Chips de exemplo para consultas rápidas
+- Atalho `Ctrl+Enter` para buscar
+- Estado de loading com skeleton animado
+- Badge de similaridade colorido por faixa (verde ≥80%, azul ≥60%, âmbar ≥40%)
+- Link direto para abrir o documento no Google Drive
+
+---
+
+## Endpoints
 
 | Método | Endpoint | Descrição |
 |--------|----------|-----------|
 | `GET` | `/health` | Status da API e conexão com Supabase |
-| `POST` | `/api/index` | Indexa/re-indexa arquivos do Google Drive |
-| `POST` | `/api/search` | Busca teses relevantes para uma situação |
+| `POST` | `/api/index` | Indexa/reindexia arquivos do Google Drive |
+| `POST` | `/api/search` | Busca teses e retorna análise da IA |
 
-### POST /api/search — Request
+### POST /api/search
 ```json
-{
-  "query": "empregado alega assédio moral como motivo para rescisão indireta",
-  "top_k": 8
-}
-```
+// Request
+{ "query": "empregado alega assédio moral como motivo para rescisão indireta", "top_k": 8 }
 
-### POST /api/search — Response
-```json
+// Response
 {
   "query": "...",
   "resumo_ia": "Com base nas teses encontradas, os principais argumentos são...",
@@ -141,15 +132,122 @@ curl -X POST http://localhost:8000/api/search \
 }
 ```
 
+### POST /api/index
+```json
+// Request
+{ "force_reindex": false }
+
+// Response
+{
+  "total_arquivos": 42,
+  "indexados": 10,
+  "atualizados": 2,
+  "ignorados": 30,
+  "erros": 0,
+  "detalhes": [...]
+}
+```
+
 ---
 
-## ⚠️ .gitignore recomendado
+## Infraestrutura de produção
+
+| Componente | Serviço | URL |
+|---|---|---|
+| Backend (FastAPI) | Render.com | `https://legal-assistant-wge8.onrender.com` |
+| Frontend (Next.js) | Netlify | (configurar após deploy) |
+| Banco vetorial | Supabase (pgvector) | — |
+| Embeddings | OpenAI `text-embedding-3-small` | — |
+| Análise IA | OpenAI GPT-4o | — |
+| Documentos | Google Drive | — |
+
+---
+
+## Setup local
+
+### Pré-requisitos
+- Python 3.12
+- Node.js 18+
+- Conta Supabase com `pgvector` ativado
+- Service Account do Google Cloud com acesso ao Drive
+- API key da OpenAI
+
+### Backend
+
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env            # preencher com suas credenciais
+uvicorn app.main:app --reload --port 8000
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+# criar .env.local com:
+# NEXT_PUBLIC_API_URL=http://localhost:8000
+npm run dev
+```
+
+### Primeira indexação
+
+```bash
+curl -X POST http://localhost:8000/api/index \
+  -H "Content-Type: application/json" \
+  -d '{"force_reindex": false}'
+```
+
+---
+
+## Variáveis de ambiente
+
+### Backend (`.env`)
+
+| Variável | Descrição |
+|---|---|
+| `SUPABASE_URL` | URL do projeto Supabase |
+| `SUPABASE_SERVICE_KEY` | Chave service_role do Supabase |
+| `OPENAI_API_KEY` | Chave da API OpenAI |
+| `OPENAI_CHAT_MODEL` | Modelo de chat (padrão: `gpt-4o`) |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | Caminho do JSON (local) ou conteúdo JSON (produção) |
+| `GOOGLE_DRIVE_FOLDER_ID` | ID da pasta raiz no Drive |
+| `ALLOWED_ORIGINS` | Lista de origens permitidas no CORS |
+
+### Frontend (`.env.local`)
+
+| Variável | Descrição |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | URL base do backend |
+
+---
+
+## Organização do Drive
+
+O sistema suporta qualquer estrutura de subpastas — a indexação é recursiva:
 
 ```
-.env
-credentials/
-venv/
-__pycache__/
-*.pyc
-.DS_Store
+Pasta Principal (ID no .env)
+├── Agravo de Petição/
+│   ├── tese1.pdf
+│   └── tese2.docx
+├── Agravo de Instrumento/
+│   └── tese3.pdf
+└── Recurso Ordinário/
+    └── tese4.docx
 ```
+
+Basta compartilhar a **pasta principal** com o e-mail da Service Account — as subpastas herdam o acesso automaticamente.
+
+---
+
+## TODO
+
+- [ ] **Filtro por categoria (subpasta):** permitir que o advogado selecione uma peça específica (ex: "Agravo de Petição") antes de buscar, restringindo os resultados àquela categoria. Requer:
+  - Adicionar coluna `categoria` na tabela do Supabase
+  - Guardar o nome da subpasta durante a indexação
+  - Adicionar parâmetro `categoria` opcional no `POST /api/search`
+  - Adicionar seletor de categoria no frontend
