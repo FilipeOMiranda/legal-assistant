@@ -1,0 +1,17 @@
+# Secrets — nunca commitar
+.env
+credentials/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
