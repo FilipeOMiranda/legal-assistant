@@ -7,7 +7,8 @@ from datetime import datetime
 
 class SearchRequest(BaseModel):
     query: str
-    top_k: Optional[int] = None  # sobrescreve o padrão da config se informado
+    top_k: Optional[int] = None       # sobrescreve o padrão da config se informado
+    categoria: Optional[str] = None   # filtra por subpasta (ex: "Agravo de Petição")
 
 class IndexRequest(BaseModel):
     force_reindex: bool = False  # reindexar mesmo arquivos não modificados
@@ -22,6 +23,7 @@ class TrechodDoc(BaseModel):
     trecho: str
     score: float          # similaridade coseno (0-1)
     pagina: Optional[int] = None
+    categoria: Optional[str] = None  # subpasta de origem
 
 class SearchResponse(BaseModel):
     query: str
@@ -60,3 +62,8 @@ class TeseChunk(BaseModel):
     conteudo: str
     embedding: List[float]
     pagina: Optional[int] = None
+    categoria: Optional[str] = None
+
+
+class CategoriasResponse(BaseModel):
+    categorias: List[str]

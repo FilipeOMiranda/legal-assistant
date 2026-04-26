@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import search, index, health
+from app.api import search, index, health, categorias
 from app.core.config import settings
 
 app = FastAPI(
@@ -20,3 +20,4 @@ app.add_middleware(
 app.include_router(health.router, tags=["health"])
 app.include_router(search.router, prefix="/api", tags=["search"])
 app.include_router(index.router, prefix="/api", tags=["index"])
+app.include_router(categorias.router, prefix="/api", tags=["categorias"])

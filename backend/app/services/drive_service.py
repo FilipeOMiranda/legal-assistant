@@ -37,15 +37,49 @@ def _get_drive_service():
 def listar_arquivos(folder_id: str) -> List[Dict]:
     """
     Lista recursivamente todos os arquivos suportados dentro de uma pasta do Drive.
-    Retorna lista com: id, name, mimeType, modifiedTime, webViewLink
+    Retorna lista com: id, name, mimeType, modifiedTime, webViewLink, categoria
+    A 'categoria' é o nome da subpasta direto-filha da pasta raiz.
     """
     service = _get_drive_service()
-    arquivos = []
-    _listar_recursivo(service, folder_id, arquivos)
+    arquivos: List[Dict] = []
+    _listar_recursivo(service, folder_id, arquivos, categoria=None, profundidade=0)
     return arquivos
 
 
-def _listar_recursivo(service, folder_id: str, resultado: List[Dict]):
+def listar_categorias(folder_id: str) -> List[str]:
+    """
+    Retorna os nomes das subpastas direto-filhas da pasta raiz.
+    São as 'categorias' usadas para filtrar a busca (ex: 'Agravo de Petição').
+    """
+    service = _get_drive_service()
+    query = (
+        f"'{folder_id}' in parents and trashed = false "
+        f"and mimeType = 'application/vnd.google-apps.folder'"
+    )
+    nomes: List[str] = []
+    page_token = None
+    while True:
+        response = service.files().list(
+            q=query,
+            spaces="drive",
+            fields="nextPageToken, files(name)",
+            pageSize=200,
+            pageToken=page_token,
+        ).execute()
+        nomes.extend(f["name"] for f in response.get("files", []))
+        page_token = response.get("nextPageToken")
+        if not page_token:
+            break
+    return sorted(nomes)
+
+
+def _listar_recursivo(
+    service,
+    folder_id: str,
+    resultado: List[Dict],
+    categoria: Optional[str],
+    profundidade: int,
+):
     query = f"'{folder_id}' in parents and trashed = false"
     page_token = None
 
@@ -60,9 +94,13 @@ def _listar_recursivo(service, folder_id: str, resultado: List[Dict]):
         for arquivo in response.get("files", []):
             mime = arquivo["mimeType"]
             if mime == "application/vnd.google-apps.folder":
-                # É uma subpasta, entrar recursivamente
-                _listar_recursivo(service, arquivo["id"], resultado)
+                # Subpasta direta da raiz vira a categoria; aninhamentos preservam a categoria do pai
+                nova_categoria = arquivo["name"] if profundidade == 0 else categoria
+                _listar_recursivo(
+                    service, arquivo["id"], resultado, nova_categoria, profundidade + 1
+                )
             elif mime in MIME_EXPORTABLE or mime in MIME_DOWNLOAD:
+                arquivo["categoria"] = categoria
                 resultado.append(arquivo)
 
         page_token = response.get("nextPageToken")

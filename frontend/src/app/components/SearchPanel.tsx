@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { searchTeses } from "@/lib/api";
+import { useEffect, useState, type FormEvent } from "react";
+import { listarCategorias, searchTeses } from "@/lib/api";
 import type { SearchResponse } from "@/lib/types";
 import { AiAnalysis } from "./AiAnalysis";
 import { DocumentCard } from "./DocumentCard";
@@ -14,9 +14,17 @@ const EXEMPLOS = [
 
 export function SearchPanel() {
   const [query, setQuery] = useState("");
+  const [categoria, setCategoria] = useState<string>("");
+  const [categorias, setCategorias] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<SearchResponse | null>(null);
+
+  useEffect(() => {
+    listarCategorias()
+      .then(setCategorias)
+      .catch(() => setCategorias([]));
+  }, []);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -28,7 +36,10 @@ export function SearchPanel() {
     setData(null);
 
     try {
-      const result = await searchTeses({ query: q });
+      const result = await searchTeses({
+        query: q,
+        categoria: categoria || undefined,
+      });
       setData(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro inesperado.");
@@ -41,6 +52,40 @@ export function SearchPanel() {
     <div className="space-y-8">
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="rounded-2xl border border-slate-200 bg-white p-2 shadow-sm focus-within:border-indigo-300 focus-within:ring-2 focus-within:ring-indigo-100">
+          {categorias.length > 0 && (
+            <div className="flex items-center gap-2 border-b border-slate-100 px-3 py-2">
+              <label
+                htmlFor="categoria"
+                className="text-xs font-medium text-slate-500"
+              >
+                Categoria:
+              </label>
+              <select
+                id="categoria"
+                value={categoria}
+                onChange={(e) => setCategoria(e.target.value)}
+                disabled={loading}
+                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 focus:border-indigo-300 focus:outline-none focus:ring-1 focus:ring-indigo-200 disabled:opacity-50"
+              >
+                <option value="">Todas as categorias</option>
+                {categorias.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+              {categoria && (
+                <button
+                  type="button"
+                  onClick={() => setCategoria("")}
+                  className="text-xs text-slate-400 hover:text-slate-600"
+                  title="Limpar filtro"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          )}
           <label htmlFor="query" className="sr-only">
             Descreva a tese que precisa rebater
           </label>

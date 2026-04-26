@@ -7,10 +7,15 @@ from app.models.schemas import TeseChunk, TrechodDoc
 TABLE = "teses"
 
 
-async def buscar_similares(embedding: List[float], top_k: Optional[int] = None) -> List[TrechodDoc]:
+async def buscar_similares(
+    embedding: List[float],
+    top_k: Optional[int] = None,
+    categoria: Optional[str] = None,
+) -> List[TrechodDoc]:
     """
     Busca os chunks mais similares ao embedding fornecido usando pgvector.
     Chama a função RPC match_teses definida no Supabase.
+    Se 'categoria' for informada, restringe a busca aos chunks dessa subpasta.
     """
     k = top_k or settings.TOP_K_RESULTS
     supabase = get_supabase()
@@ -21,6 +26,7 @@ async def buscar_similares(embedding: List[float], top_k: Optional[int] = None) 
             "query_embedding": embedding,
             "match_count": k,
             "match_threshold": 0.3,  # descarta resultados com similaridade < 30%
+            "match_categoria": categoria,
         },
     ).execute()
 
@@ -34,6 +40,7 @@ async def buscar_similares(embedding: List[float], top_k: Optional[int] = None) 
                 trecho=row["conteudo"],
                 score=round(row["similarity"], 4),
                 pagina=row.get("pagina"),
+                categoria=row.get("categoria"),
             )
         )
 

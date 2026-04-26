@@ -22,8 +22,12 @@ async def buscar_teses(request: SearchRequest):
     # 1. Gerar embedding da query
     embedding = await gerar_embedding(request.query)
 
-    # 2. Buscar chunks similares no Supabase
-    resultados = await buscar_similares(embedding, top_k=request.top_k)
+    # 2. Buscar chunks similares no Supabase (com filtro opcional por categoria)
+    resultados = await buscar_similares(
+        embedding,
+        top_k=request.top_k,
+        categoria=request.categoria,
+    )
 
     # 3. Analisar com Claude
     resumo = await analisar_teses(request.query, resultados)

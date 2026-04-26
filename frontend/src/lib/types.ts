@@ -5,6 +5,7 @@ export type TrechoDoc = {
   trecho: string;
   score: number;
   pagina?: number | null;
+  categoria?: string | null;
 };
 
 export type SearchResponse = {
@@ -17,6 +18,19 @@ export type SearchResponse = {
 export type SearchRequest = {
   query: string;
   top_k?: number;
+  categoria?: string;
+};
+
+export type CategoriasResponse = {
+  categorias: string[];
+};
+
+export type IndexDetalhe = {
+  arquivo_nome: string;
+  arquivo_id: string;
+  status: "indexado" | "atualizado" | "ignorado" | "erro";
+  chunks_gerados: number;
+  erro?: string | null;
 };
 
 export type IndexResponse = {
@@ -25,7 +39,7 @@ export type IndexResponse = {
   atualizados: number;
   ignorados: number;
   erros: number;
-  detalhes: unknown[];
+  detalhes: IndexDetalhe[];
   iniciado_em: string;
   concluido_em: string;
 };

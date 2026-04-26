@@ -91,17 +91,79 @@ export function IndexButton() {
       </button>
 
       {status === "done" && result && (
-        <span className="text-[10.5px] text-emerald-700">
-          {result.indexados} indexados · {result.atualizados} atualizados ·{" "}
-          {result.ignorados} ignorados
-          {result.erros > 0 && ` · ${result.erros} erros`}
-        </span>
+        <ResultSummary result={result} />
       )}
 
       {status === "error" && error && (
         <span className="text-[10.5px] text-red-600" title={error}>
           Falhou: {error.length > 50 ? error.slice(0, 50) + "…" : error}
         </span>
+      )}
+    </div>
+  );
+}
+
+function ResultSummary({ result }: { result: IndexResponse }) {
+  const [showErrors, setShowErrors] = useState(false);
+  const errosDetalhes = result.detalhes.filter((d) => d.status === "erro");
+
+  return (
+    <div className="flex flex-col items-end gap-1">
+      <span className="text-[10.5px] text-emerald-700">
+        {result.indexados} indexados · {result.atualizados} atualizados ·{" "}
+        {result.ignorados} ignorados
+        {result.erros > 0 && (
+          <>
+            {" · "}
+            <button
+              type="button"
+              onClick={() => setShowErrors((v) => !v)}
+              className="text-red-600 underline hover:text-red-700"
+            >
+              {result.erros} erros
+            </button>
+          </>
+        )}
+      </span>
+
+      {showErrors && errosDetalhes.length > 0 && (
+        <div className="z-10 mt-1 max-h-80 w-[28rem] max-w-[90vw] overflow-y-auto rounded-lg border border-red-200 bg-white p-3 shadow-lg">
+          <header className="mb-2 flex items-center justify-between">
+            <span className="text-xs font-semibold text-red-700">
+              Arquivos com erro ({errosDetalhes.length})
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowErrors(false)}
+              className="text-xs text-slate-400 hover:text-slate-600"
+            >
+              ✕
+            </button>
+          </header>
+          <ul className="space-y-1.5 text-[11px]">
+            {errosDetalhes.map((d) => (
+              <li
+                key={d.arquivo_id}
+                className="border-b border-slate-100 pb-1.5 last:border-0"
+              >
+                <div
+                  className="truncate font-medium text-slate-800"
+                  title={d.arquivo_nome}
+                >
+                  {d.arquivo_nome}
+                </div>
+                {d.erro && (
+                  <div className="mt-0.5 text-red-600">{d.erro}</div>
+                )}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 border-t border-slate-100 pt-2 text-[10px] text-slate-500">
+            Para corrigir: abra cada arquivo no Word/Google Docs, salve novamente como
+            .docx, e suba no Drive substituindo. Depois clique em &quot;Atualizar
+            base&quot; novamente.
+          </p>
+        </div>
       )}
     </div>
   );

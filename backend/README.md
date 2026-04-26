@@ -246,11 +246,7 @@ Basta compartilhar a **pasta principal** com o e-mail da Service Account — as 
 
 ## TODO
 
-- [ ] **Filtro por categoria (subpasta):** permitir que o advogado selecione uma peça específica (ex: "Agravo de Petição") antes de buscar, restringindo os resultados àquela categoria. Requer:
-  - Adicionar coluna `categoria` na tabela do Supabase
-  - Guardar o nome da subpasta durante a indexação
-  - Adicionar parâmetro `categoria` opcional no `POST /api/search`
-  - Adicionar seletor de categoria no frontend
+- [x] **Filtro por categoria (subpasta):** permite filtrar a busca por subpasta do Drive (ex: "Agravo de Petição"). A migração SQL está em `docs/supabase_migration_categoria.sql` — rodar no Supabase antes de reindexar.
 
 - [ ] **Indexação assíncrona com BackgroundTasks:** atualmente o `POST /api/index` mantém a requisição HTTP aberta enquanto processa todos os arquivos (pode levar 15-30 min com muitos documentos), o que causa timeout no cliente mesmo a indexação seguindo no servidor. Refatorar para:
   - Usar `BackgroundTasks` do FastAPI para disparar a indexação em background

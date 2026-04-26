@@ -22,6 +22,15 @@ export async function searchTeses(payload: SearchRequest): Promise<SearchRespons
   return res.json();
 }
 
+export async function listarCategorias(): Promise<string[]> {
+  const res = await fetch(`${API_URL}/api/categorias`);
+  if (!res.ok) {
+    throw new Error(`Erro ${res.status}`);
+  }
+  const data = await res.json();
+  return Array.isArray(data?.categorias) ? data.categorias : [];
+}
+
 export async function indexarBase(forceReindex = false): Promise<IndexResponse> {
   const res = await fetch(`${API_URL}/api/index`, {
     method: "POST",

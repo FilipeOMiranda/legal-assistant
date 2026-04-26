@@ -99,6 +99,7 @@ async def _executar_indexacao(force_reindex: bool) -> IndexResponse:
                 await deletar_chunks_do_arquivo(arquivo_id)
 
             # Salvar novos chunks
+            categoria = arquivo.get("categoria")
             novos_chunks = [
                 TeseChunk(
                     arquivo_nome=nome,
@@ -108,6 +109,7 @@ async def _executar_indexacao(force_reindex: bool) -> IndexResponse:
                     chunk_index=i,
                     conteudo=texto_chunk,
                     embedding=emb,
+                    categoria=categoria,
                 )
                 for i, (texto_chunk, emb) in enumerate(zip(chunks_texto, embeddings))
             ]
