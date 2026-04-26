@@ -19,9 +19,9 @@ class Settings(BaseSettings):
 
     # App
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
-    CHUNK_SIZE: int = 800        # tokens por chunk
-    CHUNK_OVERLAP: int = 100     # overlap entre chunks
-    TOP_K_RESULTS: int = 8       # quantos chunks retornar na busca
+    CHUNK_SIZE: int = 400        # tokens por chunk (menor = mais preciso para termos nichados)
+    CHUNK_OVERLAP: int = 80      # overlap entre chunks (~20% para preservar contexto)
+    TOP_K_RESULTS: int = 12      # quantos chunks retornar na busca (compensa chunks menores)
 
     class Config:
         env_file = ".env"
