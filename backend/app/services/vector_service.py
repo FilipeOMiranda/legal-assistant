@@ -76,3 +76,22 @@ async def buscar_modified_time(arquivo_id: str) -> Optional[str]:
     if response.data:
         return response.data[0]["arquivo_modified_time"]
     return None
+
+
+async def buscar_todos_modified_times() -> Dict[str, str]:
+    """
+    Retorna um dict {arquivo_id: arquivo_modified_time} para todos os arquivos
+    indexados. Usado pelo /api/index para checar todos os arquivos em uma única
+    query, em vez de uma query por arquivo.
+    """
+    supabase = get_supabase()
+    response = (
+        supabase.table(TABLE)
+        .select("arquivo_id, arquivo_modified_time")
+        .limit(100000)
+        .execute()
+    )
+    resultado: Dict[str, str] = {}
+    for row in (response.data or []):
+        resultado[row["arquivo_id"]] = row["arquivo_modified_time"]
+    return resultado

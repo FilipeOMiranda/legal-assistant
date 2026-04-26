@@ -6,7 +6,7 @@ from app.services.embedding_service import gerar_embeddings_batch
 from app.services.vector_service import (
     salvar_chunks,
     deletar_chunks_do_arquivo,
-    buscar_modified_time,
+    buscar_todos_modified_times,
 )
 from app.models.schemas import TeseChunk
 from app.core.config import settings
@@ -43,6 +43,9 @@ async def _executar_indexacao(force_reindex: bool) -> IndexResponse:
     arquivos = listar_arquivos(settings.GOOGLE_DRIVE_FOLDER_ID)
     indexados = atualizados = ignorados = erros = 0
 
+    # Carrega todos os modified_time de uma vez (1 query) em vez de 1 query por arquivo
+    modified_times = await buscar_todos_modified_times()
+
     for arquivo in arquivos:
         arquivo_id = arquivo["id"]
         nome = arquivo["name"]
@@ -50,8 +53,7 @@ async def _executar_indexacao(force_reindex: bool) -> IndexResponse:
         link = arquivo.get("webViewLink", "")
 
         try:
-            # Verificar se o arquivo mudou desde a última indexação
-            ultimo_modified = await buscar_modified_time(arquivo_id)
+            ultimo_modified = modified_times.get(arquivo_id)
 
             if not force_reindex and ultimo_modified == modified_time:
                 ignorados += 1
