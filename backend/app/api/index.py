@@ -30,9 +30,10 @@ async def indexar_drive(request: IndexRequest, background_tasks: BackgroundTasks
         raise HTTPException(status_code=409, detail="Indexação já em andamento.")
 
     _indexando = True
-    resultado = await _executar_indexacao(request.force_reindex)
-    _indexando = False
-    return resultado
+    try:
+        return await _executar_indexacao(request.force_reindex)
+    finally:
+        _indexando = False
 
 
 async def _executar_indexacao(force_reindex: bool) -> IndexResponse:
