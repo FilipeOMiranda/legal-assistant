@@ -251,3 +251,9 @@ Basta compartilhar a **pasta principal** com o e-mail da Service Account — as 
   - Guardar o nome da subpasta durante a indexação
   - Adicionar parâmetro `categoria` opcional no `POST /api/search`
   - Adicionar seletor de categoria no frontend
+
+- [ ] **Indexação assíncrona com BackgroundTasks:** atualmente o `POST /api/index` mantém a requisição HTTP aberta enquanto processa todos os arquivos (pode levar 15-30 min com muitos documentos), o que causa timeout no cliente mesmo a indexação seguindo no servidor. Refatorar para:
+  - Usar `BackgroundTasks` do FastAPI para disparar a indexação em background
+  - Endpoint retorna imediatamente com `{"status": "iniciada"}` em < 1s
+  - Adicionar endpoint `GET /api/index/status` para consultar progresso (total, processados, restantes)
+  - Frontend mostra barra de progresso durante a indexação em vez de loading infinito
