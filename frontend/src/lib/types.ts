@@ -18,3 +18,14 @@ export type SearchRequest = {
   query: string;
   top_k?: number;
 };
+
+export type IndexResponse = {
+  total_arquivos: number;
+  indexados: number;
+  atualizados: number;
+  ignorados: number;
+  erros: number;
+  detalhes: unknown[];
+  iniciado_em: string;
+  concluido_em: string;
+};
