@@ -248,8 +248,4 @@ Basta compartilhar a **pasta principal** com o e-mail da Service Account — as 
 
 - [x] **Filtro por categoria (subpasta):** permite filtrar a busca por subpasta do Drive (ex: "Agravo de Petição"). A migração SQL está em `docs/supabase_migration_categoria.sql` — rodar no Supabase antes de reindexar.
 
-- [ ] **Indexação assíncrona com BackgroundTasks:** atualmente o `POST /api/index` mantém a requisição HTTP aberta enquanto processa todos os arquivos (pode levar 15-30 min com muitos documentos), o que causa timeout no cliente mesmo a indexação seguindo no servidor. Refatorar para:
-  - Usar `BackgroundTasks` do FastAPI para disparar a indexação em background
-  - Endpoint retorna imediatamente com `{"status": "iniciada"}` em < 1s
-  - Adicionar endpoint `GET /api/index/status` para consultar progresso (total, processados, restantes)
-  - Frontend mostra barra de progresso durante a indexação em vez de loading infinito
+- [x] **Indexação assíncrona com BackgroundTasks:** o `POST /api/index` agora dispara a indexação em background via `asyncio.create_task` e retorna em < 1s com `{"status": "iniciada"}`. O endpoint `GET /api/index/status` retorna o estado atual (total, processados, indexados, atualizados, ignorados, erros, último arquivo, status). O frontend faz polling a cada 3s e mostra barra de progresso real.

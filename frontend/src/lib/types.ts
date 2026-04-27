@@ -43,3 +43,23 @@ export type IndexResponse = {
   iniciado_em: string;
   concluido_em: string;
 };
+
+export type IndexStartResponse = {
+  status: "iniciada";
+  iniciado_em: string;
+};
+
+export type IndexState = {
+  status: "idle" | "running" | "completed" | "error";
+  iniciado_em: string | null;
+  concluido_em: string | null;
+  total_arquivos: number;
+  processados: number;
+  indexados: number;
+  atualizados: number;
+  ignorados: number;
+  erros: number;
+  ultimo_arquivo: string | null;
+  erro_geral: string | null;
+  detalhes: IndexDetalhe[];
+};
