@@ -9,13 +9,17 @@ TABLE = "teses"
 
 async def buscar_similares(
     embedding: List[float],
+    query_text: str = "",
     top_k: Optional[int] = None,
     categoria: Optional[str] = None,
 ) -> List[TrechodDoc]:
     """
-    Busca os chunks mais similares ao embedding fornecido usando pgvector.
-    Chama a função RPC match_teses definida no Supabase.
-    Se 'categoria' for informada, restringe a busca aos chunks dessa subpasta.
+    Busca híbrida: combina busca semântica (pgvector) com busca textual
+    (full-text search em português) via Reciprocal Rank Fusion.
+
+    - 'query_text' é o texto bruto da consulta — usado pela busca textual.
+      Quando vazio, a função cai pra busca semântica pura.
+    - 'categoria' restringe a busca aos chunks de uma subpasta específica.
     """
     k = top_k or settings.TOP_K_RESULTS
     supabase = get_supabase()
@@ -24,6 +28,7 @@ async def buscar_similares(
         "match_teses",
         {
             "query_embedding": embedding,
+            "query_text": query_text,
             "match_count": k,
             "match_threshold": 0.3,  # descarta resultados com similaridade < 30%
             "match_categoria": categoria,

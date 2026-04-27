@@ -248,4 +248,6 @@ Basta compartilhar a **pasta principal** com o e-mail da Service Account — as 
 
 - [x] **Filtro por categoria (subpasta):** permite filtrar a busca por subpasta do Drive (ex: "Agravo de Petição"). A migração SQL está em `docs/supabase_migration_categoria.sql` — rodar no Supabase antes de reindexar.
 
+- [x] **Busca híbrida (semântica + textual):** combina pgvector com full-text search via Reciprocal Rank Fusion. Documentos com correspondência literal sobem no ranking; queries conceituais ainda funcionam via embedding. Sem custo extra de OpenAI. Migração: `docs/supabase_migration_hybrid_search.sql` — não exige reindexação.
+
 - [x] **Indexação assíncrona com BackgroundTasks:** o `POST /api/index` agora dispara a indexação em background via `asyncio.create_task` e retorna em < 1s com `{"status": "iniciada"}`. O endpoint `GET /api/index/status` retorna o estado atual (total, processados, indexados, atualizados, ignorados, erros, último arquivo, status). O frontend faz polling a cada 3s e mostra barra de progresso real.
