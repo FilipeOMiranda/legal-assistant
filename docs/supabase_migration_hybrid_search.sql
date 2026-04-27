@@ -12,15 +12,14 @@ alter table teses
     add column if not exists conteudo_tsv tsvector
     generated always as (to_tsvector('portuguese', conteudo)) stored;
 
--- Cria o índice GIN dentro de um bloco DO para garantir transação única
--- (a memória de manutenção precisa ser elevada na MESMA transação do CREATE INDEX)
-do $migration$
-begin
-    perform set_config('maintenance_work_mem', '256MB', true);  -- LOCAL = só nessa transação
-    execute 'create index if not exists teses_conteudo_tsv_idx
-             on teses using gin(conteudo_tsv)';
-end
-$migration$;
+-- Nota sobre o índice GIN:
+-- Idealmente teríamos `create index ... using gin(conteudo_tsv)`, mas o plano free
+-- do Supabase limita maintenance_work_mem em 32MB e isso é insuficiente para criar
+-- o índice GIN com nosso volume de chunks. Sem índice, a busca textual usa varredura
+-- sequencial, que ainda é rápida o bastante (milissegundos para ~5k chunks).
+--
+-- Quando o projeto migrar para um plano pago do Supabase, criar o índice com:
+--   create index teses_conteudo_tsv_idx on teses using gin(conteudo_tsv);
 
 
 -- 2. Substituir match_teses por versão híbrida
