@@ -12,15 +12,15 @@ alter table teses
     add column if not exists conteudo_tsv tsvector
     generated always as (to_tsvector('portuguese', conteudo)) stored;
 
--- Aumenta a memória da sessão para conseguir criar o índice GIN
--- (o padrão de 32MB é insuficiente para volumes >3000 chunks)
-set maintenance_work_mem = '128MB';
-
-create index if not exists teses_conteudo_tsv_idx
-    on teses using gin(conteudo_tsv);
-
--- Volta o valor padrão
-reset maintenance_work_mem;
+-- Cria o índice GIN dentro de um bloco DO para garantir transação única
+-- (a memória de manutenção precisa ser elevada na MESMA transação do CREATE INDEX)
+do $migration$
+begin
+    perform set_config('maintenance_work_mem', '256MB', true);  -- LOCAL = só nessa transação
+    execute 'create index if not exists teses_conteudo_tsv_idx
+             on teses using gin(conteudo_tsv)';
+end
+$migration$;
 
 
 -- 2. Substituir match_teses por versão híbrida
