@@ -79,13 +79,15 @@ def chunkar_texto(texto: str, arquivo_nome: str) -> List[str]:
     if buffer.strip():
         chunks.append(buffer.strip())
 
-    # Rede de segurança: garante que nenhum chunk excede o limite da API de embeddings
-    # (text-embedding-3-small aceita até 8192 tokens, usamos 7000 como margem)
-    LIMITE_SEGURO = 7000
+    # Validação final: força que TODOS os chunks respeitem o chunk_size configurado.
+    # Sem isso, um parágrafo único > chunk_size escapa do split inicial e gera
+    # embeddings diluídos (média semântica fraca). Tolerância = chunk_size + overlap
+    # para permitir o overlap sem quebrar.
+    LIMITE_FINAL = chunk_size + overlap
     chunks_validados: List[str] = []
     for c in chunks:
-        if _estimar_tokens(c) > LIMITE_SEGURO:
-            chunks_validados.extend(_split_por_caracteres(c, LIMITE_SEGURO, overlap))
+        if _estimar_tokens(c) > LIMITE_FINAL:
+            chunks_validados.extend(_split_por_caracteres(c, chunk_size, overlap))
         else:
             chunks_validados.append(c)
 

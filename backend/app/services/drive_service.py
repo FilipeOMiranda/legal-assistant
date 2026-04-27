@@ -155,12 +155,55 @@ def extrair_texto(arquivo: Dict) -> Optional[str]:
 
 
 def _extrair_docx(buffer: io.BytesIO) -> str:
+    """
+    Extrai texto de um .docx tentando dois caminhos:
+    1. python-docx (lê parágrafos + tabelas, rico em estrutura)
+    2. docx2txt (fallback mais tolerante a arquivos corrompidos/mal-formados)
+    """
+    primeiro_erro: Exception | None = None
+
+    # Tentativa 1: python-docx (extrai parágrafos E tabelas)
+    buffer.seek(0)
+    try:
+        texto = _extrair_docx_python_docx(buffer)
+        if texto and texto.strip():
+            return texto
+    except Exception as e:
+        primeiro_erro = e
+
+    # Tentativa 2: docx2txt — mais tolerante a docx com estrutura ZIP problemática
+    buffer.seek(0)
+    try:
+        import docx2txt
+        texto = docx2txt.process(buffer) or ""
+        if texto.strip():
+            return texto
+    except Exception:
+        pass
+
+    if primeiro_erro is not None:
+        raise primeiro_erro
+    return ""
+
+
+def _extrair_docx_python_docx(buffer: io.BytesIO) -> str:
     doc = docx.Document(buffer)
-    partes = []
+    partes: List[str] = []
+
+    # 1) Parágrafos do corpo
     for paragrafo in doc.paragraphs:
         texto = paragrafo.text.strip()
         if texto:
             partes.append(texto)
+
+    # 2) Tabelas (legais costumam ter conteúdo importante em tabelas)
+    for tabela in doc.tables:
+        for row in tabela.rows:
+            for cell in row.cells:
+                texto = cell.text.strip()
+                if texto:
+                    partes.append(texto)
+
     return "\n".join(partes)
 
 
