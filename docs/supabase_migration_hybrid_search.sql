@@ -6,20 +6,49 @@
 -- =============================================================================
 
 
--- 1. Coluna gerada com tsvector do conteúdo (para busca textual em português)
+-- 1. Coluna tsvector + trigger (mais eficiente em memória que GENERATED STORED)
 -- =============================================================================
-alter table teses
-    add column if not exists conteudo_tsv tsvector
-    generated always as (to_tsvector('portuguese', conteudo)) stored;
+-- Não usamos `GENERATED ALWAYS AS (...) STORED` porque o Postgres calcula o valor
+-- para todas as linhas existentes em uma única operação que requer
+-- maintenance_work_mem alto (>= 65MB no nosso volume), e o plano free do Supabase
+-- limita esse parâmetro em 32MB. A solução abaixo evita esse pico de memória.
 
--- Nota sobre o índice GIN:
--- Idealmente teríamos `create index ... using gin(conteudo_tsv)`, mas o plano free
--- do Supabase limita maintenance_work_mem em 32MB e isso é insuficiente para criar
--- o índice GIN com nosso volume de chunks. Sem índice, a busca textual usa varredura
--- sequencial, que ainda é rápida o bastante (milissegundos para ~5k chunks).
---
--- Quando o projeto migrar para um plano pago do Supabase, criar o índice com:
---   create index teses_conteudo_tsv_idx on teses using gin(conteudo_tsv);
+-- 1a. Adiciona coluna vazia (não dispara backfill, não usa memória)
+alter table teses add column if not exists conteudo_tsv tsvector;
+
+-- 1b. Trigger para popular automaticamente em insert/update do conteúdo
+create or replace function _update_conteudo_tsv()
+returns trigger as $tsv$
+begin
+    new.conteudo_tsv := to_tsvector('portuguese', coalesce(new.conteudo, ''));
+    return new;
+end;
+$tsv$ language plpgsql;
+
+drop trigger if exists trg_update_conteudo_tsv on teses;
+create trigger trg_update_conteudo_tsv
+    before insert or update of conteudo on teses
+    for each row execute function _update_conteudo_tsv();
+
+-- 1c. Popula as linhas existentes em batches de 500 (usa work_mem, não maintenance)
+do $backfill$
+declare
+    affected int;
+begin
+    loop
+        with batch as (
+            select id from teses where conteudo_tsv is null limit 500
+        )
+        update teses
+        set conteudo_tsv = to_tsvector('portuguese', conteudo)
+        from batch
+        where teses.id = batch.id;
+
+        get diagnostics affected = row_count;
+        exit when affected = 0;
+    end loop;
+end
+$backfill$;
 
 
 -- 2. Substituir match_teses por versão híbrida
