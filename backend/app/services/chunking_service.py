@@ -79,7 +79,17 @@ def chunkar_texto(texto: str, arquivo_nome: str) -> List[str]:
     if buffer.strip():
         chunks.append(buffer.strip())
 
-    return [c for c in chunks if len(c.strip()) > 50]  # descartar chunks muito curtos
+    # Rede de segurança: garante que nenhum chunk excede o limite da API de embeddings
+    # (text-embedding-3-small aceita até 8192 tokens, usamos 7000 como margem)
+    LIMITE_SEGURO = 7000
+    chunks_validados: List[str] = []
+    for c in chunks:
+        if _estimar_tokens(c) > LIMITE_SEGURO:
+            chunks_validados.extend(_split_por_caracteres(c, LIMITE_SEGURO, overlap))
+        else:
+            chunks_validados.append(c)
+
+    return [c for c in chunks_validados if len(c.strip()) > 50]  # descartar chunks muito curtos
 
 
 def _dividir_por_secoes(texto: str) -> List[str]:
@@ -113,6 +123,14 @@ def _subdividir_bloco(bloco: str, chunk_size: int, overlap: int) -> List[str]:
     buffer = ""
 
     for p in paragrafos:
+        # Se o próprio parágrafo já excede o chunk_size, força quebra por caracteres
+        if _estimar_tokens(p) > chunk_size:
+            if buffer.strip():
+                chunks.append(buffer.strip())
+                buffer = ""
+            chunks.extend(_split_por_caracteres(p, chunk_size, overlap))
+            continue
+
         if _estimar_tokens(buffer) + _estimar_tokens(p) > chunk_size:
             if buffer.strip():
                 chunks.append(buffer.strip())
@@ -124,6 +142,28 @@ def _subdividir_bloco(bloco: str, chunk_size: int, overlap: int) -> List[str]:
     if buffer.strip():
         chunks.append(buffer.strip())
 
+    return chunks
+
+
+def _split_por_caracteres(texto: str, chunk_size: int, overlap: int) -> List[str]:
+    """
+    Quebra forçada por janela de caracteres. Usado quando um parágrafo é grande
+    demais para caber em um único chunk (evita estourar o limite de 8192 tokens
+    da API de embeddings).
+    """
+    chunk_chars = chunk_size * 4
+    overlap_chars = overlap * 4
+    chunks: List[str] = []
+    inicio = 0
+    n = len(texto)
+    while inicio < n:
+        fim = min(inicio + chunk_chars, n)
+        pedaco = texto[inicio:fim].strip()
+        if pedaco:
+            chunks.append(pedaco)
+        if fim >= n:
+            break
+        inicio = max(fim - overlap_chars, inicio + 1)
     return chunks
 
 
