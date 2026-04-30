@@ -16,6 +16,7 @@ export function SearchPanel() {
   const [query, setQuery] = useState("");
   const [categoria, setCategoria] = useState<string>("");
   const [categorias, setCategorias] = useState<string[]>([]);
+  const [loadingCategorias, setLoadingCategorias] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<SearchResponse | null>(null);
@@ -23,7 +24,8 @@ export function SearchPanel() {
   useEffect(() => {
     listarCategorias()
       .then(setCategorias)
-      .catch(() => setCategorias([]));
+      .catch(() => setCategorias([]))
+      .finally(() => setLoadingCategorias(false));
   }, []);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -52,7 +54,7 @@ export function SearchPanel() {
     <div className="space-y-8">
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="rounded-2xl border border-slate-200 bg-white p-2 shadow-sm focus-within:border-indigo-300 focus-within:ring-2 focus-within:ring-indigo-100">
-          {categorias.length > 0 && (
+          {(loadingCategorias || categorias.length > 0) && (
             <div className="flex items-center gap-2 border-b border-slate-100 px-3 py-2">
               <label
                 htmlFor="categoria"
@@ -60,29 +62,35 @@ export function SearchPanel() {
               >
                 Categoria:
               </label>
-              <select
-                id="categoria"
-                value={categoria}
-                onChange={(e) => setCategoria(e.target.value)}
-                disabled={loading}
-                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 focus:border-indigo-300 focus:outline-none focus:ring-1 focus:ring-indigo-200 disabled:opacity-50"
-              >
-                <option value="">Todas as categorias</option>
-                {categorias.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-              {categoria && (
-                <button
-                  type="button"
-                  onClick={() => setCategoria("")}
-                  className="text-xs text-slate-400 hover:text-slate-600"
-                  title="Limpar filtro"
-                >
-                  ✕
-                </button>
+              {loadingCategorias ? (
+                <div className="h-6 w-40 animate-pulse rounded-md bg-slate-100" />
+              ) : (
+                <>
+                  <select
+                    id="categoria"
+                    value={categoria}
+                    onChange={(e) => setCategoria(e.target.value)}
+                    disabled={loading}
+                    className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 focus:border-indigo-300 focus:outline-none focus:ring-1 focus:ring-indigo-200 disabled:opacity-50"
+                  >
+                    <option value="">Todas as categorias</option>
+                    {categorias.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                  {categoria && (
+                    <button
+                      type="button"
+                      onClick={() => setCategoria("")}
+                      className="text-xs text-slate-400 hover:text-slate-600"
+                      title="Limpar filtro"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </>
               )}
             </div>
           )}
