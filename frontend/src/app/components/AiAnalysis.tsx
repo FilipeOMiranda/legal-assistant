@@ -7,9 +7,12 @@ export function AiAnalysis({ resumo }: Props) {
     .filter(Boolean);
 
   return (
-    <section className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50/70 via-white to-white p-6 shadow-sm sm:p-8">
-      <header className="mb-4 flex items-center gap-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-white shadow-sm">
+    <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-6 shadow-lg sm:p-8">
+      <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-indigo-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-violet-500/10 blur-3xl" />
+
+      <header className="relative mb-5 flex items-center gap-3">
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-500/20 ring-1 ring-indigo-400/30">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -18,7 +21,7 @@ export function AiAnalysis({ resumo }: Props) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="h-4 w-4"
+            className="h-4 w-4 text-indigo-300"
             aria-hidden
           >
             <path d="M12 2v4" />
@@ -32,16 +35,14 @@ export function AiAnalysis({ resumo }: Props) {
           </svg>
         </span>
         <div>
-          <h2 className="text-base font-semibold text-slate-900">
-            Análise da IA
-          </h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="text-base font-semibold text-white">Análise da IA</h2>
+          <p className="text-xs text-indigo-300/70">
             Síntese sobre as teses encontradas para o caso
           </p>
         </div>
       </header>
 
-      <div className="space-y-4 text-[15px] leading-relaxed text-slate-700">
+      <div className="relative space-y-4 text-[15px] leading-relaxed text-slate-300">
         {paragraphs.length > 0 ? (
           paragraphs.map((p, i) => (
             <p key={i} className="whitespace-pre-wrap">
